@@ -55,6 +55,8 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    books         Book[]
+    notes         Note[]
 }
 
 model VerificationToken {
@@ -63,4 +65,48 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Book {
+    id         Int     @id @default(autoincrement())
+    title      String  @unique
+    author     String
+    chapters   Int
+    year       Int
+    image      String
+    rating     Float
+    genres     Genre[]
+    user       User[]
+    numReaders Int     @default(0)
+
+    @@index([title])
+}
+
+model Genre {
+    id    Int    @id @default(autoincrement())
+    name  String @unique
+    books Book[]
+}
+
+model Note {
+    id               Int             @id @default(autoincrement())
+    chapterId        String
+    text             String
+    chapter          Int
+    readingSession   ReadingSession? @relation(fields: [readingSessionId], references: [id])
+    readingSessionId Int?
+    userId           String?
+    user             User?           @relation(fields: [userId], references: [id])
+
+    @@index([readingSessionId])
+    @@index([userId])
+}
+
+model ReadingSession {
+    id           Int      @id @default(autoincrement())
+    startTime    DateTime @default(now())
+    endTime      DateTime
+    startChapter Int
+    endChapter   Int
+    notes        Note[]
 }

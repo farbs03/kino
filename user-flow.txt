@@ -1,0 +1,14 @@
+User goes to /explore, adds book to library, can rate a book, can write review
+User goes to /read, sees books they've added to library
+- User clicks on book, goes to page specific for that book
+- Can indicate rating and leave review; will reflect on the /explore page
+- Sees previous sessions they've done w/ dates and number of chapters and such, is able to click through these and 
+see what they've written and for what chapters; can do any necessary data modifications
+- Sees visual for progress they've made through the book (based on completed chapters)
+- Can manually add a reading session if they forgot to when they were actually reading (user estimates are fine for time inputs)
+- User clicks on start reading button
+    - Creates a new reading session in the database, storing the start time and start chapter, which would be either equal to or 1 plus 
+    the last session's end chapter (user can choose)
+    - User is brought to a page with a time display and option to add a note for the chapter they're on
+    - User can click a stop button, which will update the reading session data's stop time and stop chapter accordingly
+    - User is brought back to page for the book, with the session now displayed below the other previous sessions
