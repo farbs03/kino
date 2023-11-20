@@ -1,16 +1,11 @@
+import { Tab } from "@headlessui/react";
 import { Book } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 
 export default function Read() {
 	const { data: sessionData } = useSession();
-
-	function getBooks() {
-		if (sessionData?.user) {
-			const user = api.user.getUserBooks.useQuery();
-			console.log(user.data);
-		}
-	}
+	const { data: userBooks, isLoading } = api.userBook.getUserBooks.useQuery();
 	return (
 		<div>
 			{!sessionData ? (
@@ -21,13 +16,22 @@ export default function Read() {
 				</div>
 			) : (
 				<div>
-					<p className="text-4xl font-bold mb-4">Read</p>
-					<button
-						onClick={() => getBooks()}
-						className="bg-black text-white font-semibold py-2 px-4 rounded-md my-4"
-					>
-						Get Books
-					</button>
+					<p className="text-4xl font-bold my-4">Read</p>
+					{isLoading && <p>Loading...</p>}
+					{userBooks?.map((book) => (
+						<p key={book.id}>{book.bookId}</p>
+					))}
+
+					{/* <Tab.Group>
+						<Tab.List>
+							<Tab>Notes</Tab>
+							<Tab>Sessions</Tab>
+						</Tab.List>
+						<Tab.Panels>
+							<Tab.Panel>Content 1</Tab.Panel>
+							<Tab.Panel>Content 2</Tab.Panel>
+						</Tab.Panels>
+					</Tab.Group> */}
 				</div>
 			)}
 		</div>
