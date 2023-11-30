@@ -7,7 +7,16 @@ import {
 } from "~/server/api/trpc";
 
 export const bookRouter = createTRPCRouter({
-    getAll: publicProcedure.query(({ ctx }) => {
+    getAllBooks: publicProcedure.query(({ ctx }) => {
         return ctx.db.book.findMany()
       }),
+    getBook: publicProcedure
+    .input(z.object({id: z.number()}))
+    .query(async ({ctx, input}) => {
+      return ctx.db.book.findUnique({
+        where: {
+          id: input.id
+        }
+      })
+    })
 });

@@ -15,6 +15,9 @@ export const userBookRouter = createTRPCRouter({
                 userId: ctx.session.user.id,
                 bookId: input.bookId
             },
+            include: {
+                book: true
+            }
         })
     }),
     getUserBooks: protectedProcedure
@@ -22,6 +25,9 @@ export const userBookRouter = createTRPCRouter({
         return await ctx.db.userBook.findMany({
             where: {
                 userId: ctx.session.user.id
+            },
+            include: {
+                book: true
             }
         })
     }),

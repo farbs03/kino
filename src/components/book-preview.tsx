@@ -4,17 +4,15 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Rating from "./rating";
 import { api } from "~/utils/api";
-import { BookmarkIcon } from "@heroicons/react/24/solid";
+import {
+	BookmarkIcon,
+	CheckCircleIcon,
+	XCircleIcon,
+} from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
-
-/*
-	Problem: foundBook is not being updated properly after adding/deleting it frmro database
-		- It is considered null after adding, and nonnull after deleting
-			- Only properly updates when page refreshes, but that's obviously unacceptable
-		- How the fuck do I fix this?
-		- 
-	
-*/
+import type { MouseEvent } from "react";
+import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function BookPreview({ bookData }: { bookData: Book }) {
 	const { data: foundBook, isLoading } = api.userBook.getUserBook.useQuery({
@@ -27,9 +25,16 @@ export default function BookPreview({ bookData }: { bookData: Book }) {
 		onSuccess: () => {
 			setAdded(true);
 			void ctx.userBook.getUserBook.invalidate();
+			toast.success("Added book to library", {
+				icon: <CheckCircleIcon className="w-6 h-6 text-green-500" />,
+				className: "border-b-4 border-green-500 font-sans",
+			});
 		},
 		onError: () => {
-			console.log("wee woo wee woo");
+			toast.error("Error adding book to library!", {
+				icon: <XCircleIcon className="w-6 h-6 text-red-500" />,
+				className: "border-b-4 border-red-500 font-sans",
+			});
 		},
 	});
 	const removeBook = api.userBook.removeFromLibrary.useMutation({
@@ -42,7 +47,8 @@ export default function BookPreview({ bookData }: { bookData: Book }) {
 		},
 	});
 
-	function toggleAdded() {
+	function toggleAdded(e: MouseEvent) {
+		e.preventDefault();
 		if (!added) {
 			addBook.mutate({ bookId: bookData.id });
 		} else if (foundBook) {
@@ -54,38 +60,44 @@ export default function BookPreview({ bookData }: { bookData: Book }) {
 		setAdded(foundBook !== null);
 	}, [foundBook]);
 	return (
-		<a href="#">
+		<Link href={`/explore/${bookData.id}`} className="z-0">
 			<div className="z-0 w-full flex flex-col md:flex-row select-none gap-4 rounded-md hover:bg-gray-100 transition duration-100 ease-in p-4">
-				<div className="w-[120px] h-[180px] rounded-md relative mx-auto">
+				<div className="w-32 aspect-[2/3] rounded-md mx-auto">
 					<Image
-						width={120}
-						height={180}
-						className="rounded-md"
+						width={128}
+						height={192}
+						className="rounded-md object-fill"
 						alt={bookData.title}
 						src={bookData.image}
 					/>
 				</div>
-				<div className="max-w-xl flex flex-col gap-1">
+				<div className="w-32 flex flex-col gap-1">
 					<p className="font-bold text-lg line-clamp-1">
 						{bookData.title}
 					</p>
 					<p className="text-gray-500 line-clamp-1">
 						{bookData.author}
 					</p>
-					<Rating rating={bookData.rating} />
+					{bookData.totalRatings === 0 ? (
+						"No ratings"
+					) : (
+						<Rating
+							rating={bookData.numRatings / bookData.totalRatings}
+						/>
+					)}
 					<button
-						onClick={() => toggleAdded()}
-						disabled={isLoading}
+						onClick={(e) => toggleAdded(e)}
+						disabled={isLoading || added}
 						className="z-10 group disabled:cursor-not-allowed md:bg-black w-8 h-8 rounded-full mt-auto ml-auto text-white grid place-items-center active:scale-95 disabled:active:scale-100 transition duration-100 ease-in"
 					>
 						<BookmarkIcon
 							className={`${
-								added ? "text-yellow-500" : "text-gray-500"
+								added ? "text-yellow-500" : "text-gray-200"
 							} w-4 h-4`}
 						/>
 					</button>
 				</div>
 			</div>
-		</a>
+		</Link>
 	);
 }

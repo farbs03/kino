@@ -9,7 +9,7 @@ async function main() {
         chapters: 1098,
         year: 1997,
         image: "/onepiece-vol-1.jpg",
-        rating: 10
+        urlCode: "one-piece",
       },
       {
         title: "Berserk",
@@ -17,7 +17,7 @@ async function main() {
         chapters: 376,
         year: 1990,
         image: "/berserk-vol-1.jpg",
-        rating: 10
+        urlCode: "berserk",
       }
     ]
   })

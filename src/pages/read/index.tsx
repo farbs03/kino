@@ -1,6 +1,7 @@
 import { Tab } from "@headlessui/react";
 import { Book } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import UserBookPreview from "~/components/user-book-preview";
 import { api } from "~/utils/api";
 
 export default function Read() {
@@ -18,20 +19,15 @@ export default function Read() {
 				<div>
 					<p className="text-4xl font-bold my-4">Read</p>
 					{isLoading && <p>Loading...</p>}
-					{userBooks?.map((book) => (
-						<p key={book.id}>{book.bookId}</p>
-					))}
-
-					{/* <Tab.Group>
-						<Tab.List>
-							<Tab>Notes</Tab>
-							<Tab>Sessions</Tab>
-						</Tab.List>
-						<Tab.Panels>
-							<Tab.Panel>Content 1</Tab.Panel>
-							<Tab.Panel>Content 2</Tab.Panel>
-						</Tab.Panels>
-					</Tab.Group> */}
+					<div className="flex gap-6">
+						{userBooks?.map((userBook) => (
+							<UserBookPreview
+								key={userBook.id}
+								userBook={userBook}
+								bookData={userBook.book}
+							/>
+						))}
+					</div>
 				</div>
 			)}
 		</div>

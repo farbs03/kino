@@ -8,28 +8,38 @@ import { usePopper } from "react-popper";
 import type { CSSProperties } from "react";
 import { Bars3Icon } from "@heroicons/react/20/solid";
 import Drawer from "../ui/drawer";
+import {
+	InformationCircleIcon,
+	MagnifyingGlassIcon,
+	BookOpenIcon,
+} from "@heroicons/react/24/solid";
 
 export default function Navbar() {
 	type Page = {
 		path: string;
 		title: string;
+		icon: React.ReactNode;
 	};
 	const pages: Page[] = [
 		{
-			path: "/read",
-			title: "Read",
+			path: "/about",
+			title: "About",
+			icon: <InformationCircleIcon className="w-6 h-6" />,
 		},
+
 		{
 			path: "/explore",
 			title: "Explore",
+			icon: <MagnifyingGlassIcon className="w-6 h-6" />,
 		},
 		{
-			path: "/about",
-			title: "About",
+			path: "/read",
+			title: "Read",
+			icon: <BookOpenIcon className="w-6 h-6" />,
 		},
 	];
 
-	const { data: sessionData } = useSession();
+	const { data: sessionData, status } = useSession();
 	const pathname = usePathname();
 
 	const [referenceElement, setReferenceElement] =
@@ -54,16 +64,20 @@ export default function Navbar() {
 					<Link
 						href={page.path}
 						key={page.path}
-						className={`font-semibold ${
+						className={`font-semibold flex items-center gap-2 ${
 							pathname !== page.path
 								? "text-gray-500"
-								: "text-black"
-						} transition duration-100 ease-in hover:text-black`}
+								: "text-black bg-gray-100"
+						} transition duration-100 ease-in hover:text-black hover:bg-gray-100 px-2 py-1 rounded-md`}
 					>
-						{page.title}
+						{page.icon}
+						<p>{page.title}</p>
 					</Link>
 				))}
-				{!sessionData && (
+				{status === "loading" && (
+					<button className="origin-center grid aspect-square h-10 place-items-center rounded-full bg-black text-white active:scale-95 transition duration-100 ease-in"></button>
+				)}
+				{!sessionData && status !== "loading" && (
 					<button
 						className="rounded-full bg-black px-6 py-3 font-semibold text-white transition duration-100 ease-in hover:bg-black/90"
 						onClick={() => void signIn()}
@@ -97,12 +111,12 @@ export default function Navbar() {
 								className="w-52 rounded-md origin-top drop-shadow-md bg-white z-10 flex flex-col gap-2 p-2 text-left font-semibold"
 							>
 								<Link href="/account">
-									<Popover.Button className="bg-black text-white transition duration-100 ease-in py-2 rounded-md w-full">
+									<Popover.Button className="bg-black cursor-pointer text-white transition duration-100 ease-in py-2 rounded-md w-full">
 										Account
 									</Popover.Button>
 								</Link>
 								<Popover.Button
-									className="bg-gray-200 hover:bg-gray-300 transition duration-100 ease-in py-2 rounded-md"
+									className="bg-gray-200 cursor-pointer hover:bg-gray-300 transition duration-100 ease-in py-2 rounded-md"
 									onClick={() => void signOut()}
 								>
 									Sign Out
@@ -131,9 +145,10 @@ export default function Navbar() {
 										pathname !== page.path
 											? "text-gray-500"
 											: "text-black bg-gray-100"
-									} transition duration-100 ease-in hover:text-black p-2 rounded-md`}
+									} transition duration-100 ease-in hover:text-black p-2 rounded-md flex gap-2`}
 								>
-									{page.title}
+									{page.icon}
+									<p>{page.title}</p>
 								</Link>
 							))}
 						</div>

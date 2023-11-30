@@ -67,15 +67,17 @@ model VerificationToken {
 }
 
 model Book {
-    id        Int        @id @default(autoincrement())
-    title     String     @unique
-    author    String
-    chapters  Int
-    year      Int
-    image     String
-    rating    Float
-    genres    Genre[]
-    userBooks UserBook[]
+    id           Int        @id @default(autoincrement())
+    title        String     @unique
+    author       String
+    chapters     Int
+    year         Int
+    image        String
+    numRatings   Int        @default(0)
+    totalRatings Int        @default(0)
+    urlCode      String     @unique
+    genres       Genre[]
+    userBooks    UserBook[]
 
     @@index([title])
 }
@@ -92,6 +94,8 @@ model UserBook {
     userId          String
     book            Book             @relation(fields: [bookId], references: [id])
     bookId          Int
+    chaptersRead    Int              @default(0)
+    rating          Int?
     notes           Note[]
     readingSessions ReadingSession[]
 
